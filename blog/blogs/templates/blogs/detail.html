@@ -1,0 +1,9 @@
+{% extends "blogs/base.html" %}
+
+{% block content %}
+	<h1>{{ post.title }}</h1>
+	<p>{{ post.text }}</p>
+	<p><strong>Author:</strong> {{ post.owner.username }}</p>
+	<p><small>Published: {{ post.date_added }}</small></p>
+	<a href="{% url 'blogs:index' %}">< Back</a>
+{% endblock content %}

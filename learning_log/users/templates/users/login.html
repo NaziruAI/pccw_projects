@@ -1,7 +1,6 @@
 {% extends "learning_logs/base.html" %}
 
 {% block content %}
-<a href="{% url 'learning_logs:index' %}">Home</a>  <!-- Correct usage with the namespace -->
 
 {% if form.errors %}
 <p>Your username and password didn't match. Please try again.</p>
