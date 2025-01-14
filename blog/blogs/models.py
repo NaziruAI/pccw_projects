@@ -12,3 +12,12 @@ class BlogPost(models.Model):
 
     def __str__(self):
         return self.title
+
+class Comment(models.Model):
+    text = models.TextField()  # Updated to use 'text'
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    blog_post = models.ForeignKey('BlogPost', related_name='comments', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.text[:20]  # Show the first 20 characters of the text

@@ -3,8 +3,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, Http404
 
-from .models import BlogPost
+from .models import BlogPost, Comment
 from .forms import BlogPostForm
+from .forms import CommentForm
 
 def index(request):
     """Home page that displays all blog posts."""
@@ -57,6 +58,35 @@ def delete_blog(request, post_id):
 
 
 # Details view
-def detail(request, post_id):
+def blog_post_detail(request, post_id):
     post = get_object_or_404(BlogPost, id=post_id)
-    return render(request, 'blogs/detail.html', {'post': post})
+
+    # Query the number of comments for this post
+    comment_count = Comment.objects.filter(blog_post=post).count()
+
+    # Create the comment message
+    if comment_count == 1:
+        comment_message = "1 comment"
+    else:
+        comment_message = f"{comment_count} comments"
+
+    # Handle form submission
+    if request.method == 'POST':
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.author = request.user  # Set the current user as the comment's author
+            comment.blog_post = post  # Associate the comment with the blog post
+            comment.save()  # Save the comment
+
+            # Redirect to the same post detail page after adding the comment
+            return redirect('blogs:blog_post_detail', post_id=post.id)
+
+    else:
+        comment_form = CommentForm()
+
+    return render(request, 'blogs/blog_post_detail.html', {
+        'post': post,
+        'comment_form': comment_form,
+        'comment_message': comment_message,  # Pass the comment count message to the template
+    })
