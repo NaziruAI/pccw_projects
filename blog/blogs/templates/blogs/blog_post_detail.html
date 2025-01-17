@@ -6,6 +6,7 @@
     <p>{{ post.text }}</p>  <!-- The content of the blog post -->
 
     <h3>Comments:</h3>
+
     {% for comment in post.comments.all %}
         <div class="comment">
             <p><strong>{{ comment.author }}</strong>: {{ comment.text }}</p>
@@ -21,7 +22,7 @@
         <button type="submit" class="btn btn-primary">Submit Comment</button>
     </form>
 
-    <a href="{% url 'blogs:index' %}" class="btn btn-secondary">Back to Blog List</a>
+    <a href="{% url 'blogs:index' %}" class="btn btn-secondary"><< Back</a>
 </div>
 {% endblock %}
 

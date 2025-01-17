@@ -10,12 +10,29 @@ from .forms import CommentForm
 def index(request):
     """Home page that displays all blog posts."""
     posts = BlogPost.objects.order_by('-date_added')  # Retrieve all posts in reverse chronological order
-    context = {'posts': posts}
+    # Add a comment_message for each post
+    posts_with_comments = []
+    for post in posts:
+        comment_count = post.comments.count()  # Assuming a `comments` related_name
+        if comment_count == 1:
+            comment_message = "1 comment"
+        else:
+            comment_message = f"{comment_count} comments"
+        
+        posts_with_comments.append({
+            'post': post,
+            'comment_message': comment_message
+        })
+
+    context = {
+        'posts_with_comments': posts_with_comments,
+    }
     return render(request, 'blogs/index.html', context)
 
 def check_post_owner(post, user):
     if post.owner != user:
         raise Http404
+    
 @login_required
 def new_blog(request):
     """Add a new blog post."""
@@ -61,6 +78,9 @@ def delete_blog(request, post_id):
 def blog_post_detail(request, post_id):
     post = get_object_or_404(BlogPost, id=post_id)
 
+    if not request.user.is_authenticated:
+            return redirect('users:login')  # Redirect unauthenticated users to the login page
+        
     # Query the number of comments for this post
     comment_count = Comment.objects.filter(blog_post=post).count()
 
